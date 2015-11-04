@@ -1,0 +1,18 @@
+service rsync
+{
+
+disable = no   #修改为no
+
+socket_type     = stream
+
+wait            = no
+
+user            = root
+
+server          = /usr/bin/rsync
+
+server_args     = --daemon
+
+log_on_failure  += USERID
+
+}
