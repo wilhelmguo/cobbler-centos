@@ -55,13 +55,5 @@ else
 #        cobbler check
         cobbler sync
 
-        mkdir /mnt/cobbler
-        mountpoint=/mnt/cobbler
-        #Import isos to cobbler
-        for iso in `ls /mnt/iso`; do
-                mount -t iso9660 -o loop,ro /mnt/iso/$iso $mountpoint
-                cobbler import --name=$iso  --path=$mountpoint
-                umount $mountpoint
-        done
         cobbler sync
 fi

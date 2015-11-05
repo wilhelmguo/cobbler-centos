@@ -20,7 +20,8 @@ SELINUX=disabled #增加
 setenforce 0 #使配置立即生效
 **关闭防火墙**
 ``` shell
-service firewalld stop
+systemctl stop firewalld
+systemctl disable firewalld
 ```
 ##安装Cobbler
 1.安装最新的epel库
@@ -29,8 +30,7 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarc
 ```
 2.通过yum安装Cobbler以及相关的包
 ``` shell
-yum  install cobbler tftp tftp-serverxinetd  dhcp  httpd  rsync  #安装cobbler
-yum  install  pykickstart debmirror  python-ctypes   cman   #安装运行cobbler需要的软件包
+yum install cobbler cobbler-web dnsmasq syslinux pykickstart dhcp #安装cobbler
 ```
 3.启动Cobbler
 ``` shell
@@ -123,6 +123,123 @@ systemctl enable xinetd
 systemctl start xinetd
 ```
 **cobbler check**这个命令合一帮助检测Cobbler配置目前仍然存在的问题，根据提示修改这些问题，然后同步和重启cobbler即可。
+
+**获取cobbler-loaders**
+``` shell
+cobbler get-loaders
+```
+**安装必要组件**
+``` shell 
+yum install fence-agents
+rpm -Uvh ftp://rpmfind.net/linux/epel/6/x86_64/debmirror-2.14-2.el6.noarch.rpm  --nodeps --force
+```
+后续配置
+``` shell
+sudo vim /etc/xinetd.d/rsync
+# 增加以下内容
+service rsync
+{
+
+disable = no   #修改为no
+
+socket_type     = stream
+
+wait            = no
+
+user            = root
+
+server          = /usr/bin/rsync
+
+server_args     = --daemon
+
+log_on_failure  += USERID
+
+}
+```
+修改debmirror配置
+sudo vim etc/debmirror.conf
+``` shell
+# Default config for debmirror
+
+# The config file is a perl script so take care to follow perl syntax.
+# Any setting in /etc/debmirror.conf overrides these defaults and
+# ~/.debmirror.conf overrides those again. Take only what you need.
+#
+# The syntax is the same as on the command line and variable names
+# loosely match option names. If you don't recognize something here
+# then just stick to the command line.
+#
+# Options specified on the command line override settings in the config
+# files.
+
+# Location of the local mirror (use with care)
+# $mirrordir="/path/to/mirrordir"
+
+# Output options
+$verbose=0;
+$progress=0;
+$debug=0;
+
+# Download options
+$host="archive.ubuntu.com";
+$user="anonymous";
+$passwd="anonymous@";
+$remoteroot="ubuntu";
+$download_method="ftp";
+# @dists="precise";  #注释掉这个
+@sections="main,main/debian-installer,universe,restricted,multiverse";
+# @arches="i386";  #注释掉这个
+# @ignores="";
+# @excludes="";
+# @includes="";
+# @excludes_deb_section="";
+# @limit_priority="";
+$omit_suite_symlinks=0;
+$skippackages=0;
+# @rsync_extra="doc,tools";
+$i18n=0;
+$getcontents=0;
+$do_source=1;
+$max_batch=0;
+
+# @di_dists="dists";
+# @di_archs="arches";
+
+# Save mirror state between runs; value sets validity of cache in days
+$state_cache_days=0;
+
+# Security/Sanity options
+$ignore_release_gpg=0;
+$ignore_release=0;
+$check_md5sums=0;
+$ignore_small_errors=0;
+
+# Cleanup
+$cleanup=0;
+$post_cleanup=1;
+
+# Locking options
+$timeout=300;
+
+# Rsync options
+$rsync_batch=200;
+$rsync_options="-aIL --partial";
+
+# FTP/HTTP options
+$passive=0;
+# $proxy="http://proxy:port/";
+
+# Dry run
+$dry_run=0;
+
+# Don't keep diff files but use them
+$diff_mode="use";
+
+# The config file must return true or perl complains.
+# Always copy this.
+1;
+```
+
 ##导入Distribution
 1.distro导入
 ``` shell
@@ -148,3 +265,4 @@ cobbler profile edit --name=CentOS-7-x86_64 --kickstart=/var/lib/cobbler/kicksta
 启动时选择从网络启动会自动寻找本网内的DHCP服务器获取IP然后从Cobbler服务器获取安装文件并自动进行安装。
 ![Alt text](./1446195198640.png)
 至此！Cobbler自动安装系统完成！
+
