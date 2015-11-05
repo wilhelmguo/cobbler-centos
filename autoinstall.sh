@@ -5,7 +5,7 @@ cp -fr ./config /etc/selinux/config
 systemctl stop firewalld
 systemctl disable firewalld 
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
-yum install cobbler cobbler-web dnsmasq syslinux pykickstart dhcp fence-agents
+yum install -y cobbler cobbler-web dnsmasq syslinux pykickstart dhcp fence-agents
 rpm -Uvh ftp://rpmfind.net/linux/epel/6/x86_64/debmirror-2.14-2.el6.noarch.rpm  --nodeps --force
 systemctl enable cobblerd
 systemctl start cobblerd
