@@ -17,7 +17,7 @@ cp -fr ./modules.conf /etc/cobbler/modules.conf
 systemctl enable xinetd
 systemctl start xinetd
 cp -fr ./rsync /etc/xinetd.d/rsync
-cp -fr ./debmirror.conf etc/debmirror.conf
+cp -fr ./debmirror.conf /etc/debmirror.conf
 if [ ! $SERVER_IP ]
 then
         echo "Please use $SERVER_IP set the IP address of the need to monitor."
@@ -55,5 +55,4 @@ else
 #        cobbler check
         cobbler sync
 
-        cobbler sync
 fi
