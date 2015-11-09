@@ -10,6 +10,8 @@
   **DHCP_SUBNET**：指定DHCP的网段  **必填**  
   **DHCP_ROUTER**：指定DHCP的网管  **必填**   
   **DHCP_DNS**：指定DHCP的DNS地址  **必填**  
+示例如下：./autoinstall.sh  192.168.2.8 "192.168.2.230 192.168.2.235" cobbler 192.168.2.0 192.168.2.1 223.5.5.5  
+**必须严格按照顺序传入参数！！！**
 ### 导入镜像到cobbler
 把需要导入的镜像iso文件放到/opt/iso 文件夹下，执行import-iso.sh自动导入镜像！
 OK！！！就是这么简单
